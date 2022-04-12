@@ -108,3 +108,25 @@ def wrangle_sales():
     print('Downloading data from SQL...')
     print('Saving to .csv')
     return df
+
+
+
+
+def join_to_sales(sales, items, stores):
+    
+    # rename columns to facilitate merge
+    sales = sales.rename(columns={'store': 'store_id', 'item': 'item_id'})
+    
+    # merge the items and stores to the sales dataframe
+    df = pd.merge(sales, items, how='left', on='item_id')
+    df = pd.merge(df, stores, how='left', on='store_id')
+    
+    return df
+
+
+
+
+
+def wrangle_german_power():
+    df = pd.read_csv('https://raw.githubusercontent.com/jenfly/opsd/master/opsd_germany_daily.csv')
+    return df
