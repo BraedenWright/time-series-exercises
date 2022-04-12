@@ -79,3 +79,32 @@ def wrangle_stores():
     print('Downloading data from SQL...')
     print('Saving to .csv')
     return df
+
+
+
+
+
+def wrangle_sales():
+    
+    filename = 'sales.csv'
+    
+    if os.path.exists(filename):
+        print('Reading cleaned data from csv file...')
+        return pd.read_csv(filename)
+    
+    
+    sales = []
+    
+    url = 'https://api.data.codeup.com/api/v1/sales?page='
+    
+    for num in range(1, 184):
+        response = requests.get(url + str(num))
+        data = response.json()
+        sales.extend(data['payload']['sales'])
+    
+    df = pd.DataFrame(sales)
+    df.to_csv(filename, index=False)
+    
+    print('Downloading data from SQL...')
+    print('Saving to .csv')
+    return df
