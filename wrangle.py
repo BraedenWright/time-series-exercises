@@ -124,7 +124,83 @@ def join_to_sales(sales, items, stores):
     return df
 
 
+def store_item_sales():
+    
+    
+    filename = 'store_item_sales.csv'
+    
+    if os.path.exists(filename):
+        print('Reading merged data from csv file...')
+        return pd.read_csv(filename)
+    
+    # ITEMS
+    domain = 'https://api.data.codeup.com'
+    endpoint = '/api/v1/items'
+    items = []
 
+    url = domain + endpoint
+
+    response = requests.get(url)
+    data = response.json()
+    items.extend(data['payload']['items'])
+    
+    # Get the next page for items
+    url = domain + data['payload']['next_page']
+
+    response = requests.get(url)
+    data = response.json()
+    items.extend(data['payload']['items'])
+    
+    # Get the last page for items
+    url = domain + data['payload']['next_page']
+
+    response = requests.get(url)
+    data = response.json()
+    items.extend(data['payload']['items'])
+    
+    # commit to dataframe
+    items_df = pd.DataFrame(items, index=None)
+    
+    # STORES
+    domain = 'https://api.data.codeup.com'
+    endpoint = '/api/v1/stores'
+    stores = []
+
+    url = domain + endpoint
+
+    response = requests.get(url)
+    data = response.json()
+    stores.extend(data['payload']['stores'])
+    
+    stores_df = pd.DataFrame(stores, index=None)
+    
+    #SALES
+    sales = []
+    
+    url = 'https://api.data.codeup.com/api/v1/sales?page='
+    
+    for num in range(1, 184):
+        response = requests.get(url + str(num))
+        data = response.json()
+        sales.extend(data['payload']['sales'])
+    
+    sales_df = pd.DataFrame(sales)
+    
+    # MERGE
+    # rename columns to facilitate merge
+    sales_df = sales_df.rename(columns={'store': 'store_id', 'item': 'item_id'})
+    
+    # merge the items and stores to the sales dataframe
+    df = pd.merge(sales_df, items_df, how='left', on='item_id')
+    df = pd.merge(df, stores_df, how='left', on='store_id')
+    
+    # commit to dataframe and save to .csv
+    df.to_csv(filename, index=False)
+    
+    print('Downloading data from SQL and merging...')
+    print('Saving to .csv')
+    return df
+    
 
 
 def wrangle_german_power():
