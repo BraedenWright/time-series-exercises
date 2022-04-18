@@ -16,7 +16,7 @@ def prep_store_data(df):
     
     # rename and add/drop select columns
     df = df.rename(columns={'sale_amount': 'quantity'})
-    df = df.drop(column='item_id')
+    df = df.drop(columns='item_id')
     df['sales_total'] = df.quantity * df.item_price
     df['month'] = df.index.month_name()
     df['day_of_week'] = df.index.day_name()
