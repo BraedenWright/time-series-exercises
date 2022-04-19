@@ -3,6 +3,9 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 import os
+from math import sqrt
+from sklearn.metrics import mean_squared_error
+
 
 
 def prep_store_data(df):
